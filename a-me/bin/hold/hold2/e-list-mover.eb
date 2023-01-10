@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+#e-list-mover.eb
+#2022-10-21-1715 EJR
+#===========================================================================
+
+#move items in a file list to another place
+list=$(zenity --file-selection --title="Select the list file")
+  if [ $? == 1 ]; then exit 0; fi
+outfolder=$(zenity --file-selection --directory --title="Select Output Folder")
+  if [ $? == 1 ]; then exit 0; fi
+
+for f in $(cat ${list})
+do
+mv $f $outfolder
+done
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+#
+#
+#

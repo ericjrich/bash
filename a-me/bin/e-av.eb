@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+#20221216-1700 est EJR
+shopt -s dotglob; clear
+#== MENU ==
+echo '------ EJR AV UTILITIES ------'
+echo '1 - CONVERT'
+echo '2 - CONVERT-BULK'
+echo '3 - SPEED'
+echo '4 - SPEED-BULK'
+echo '5 - JOIN'
+read opzzz; clear
+#== CASE ==
+case $opzzz in
+1)
+file=$(zenity --file-selection --title='CONVERT: Select AV file')
+dir=${file%/*}
+fn="$(basename "${file}")"
+fnbase="${fn%.*}"
+extout=$(zenity --width=400 --height=200 --entry --title="Extension Of Output Files" --text="Output-Extesnion:" --entry-text "ext")
+  if [ $? == 1 ]; then exit 0; fi
+#ACTION
+ffmpeg -i $file ${dir}/${fnbase}.${extout}
+;;
+2)
+list=$(zenity --title="Select Files Bulk Convert" --file-selection --multiple --separator=$'\n')
+extout=$(zenity --width=400 --height=200 --entry --title="Extension Of Output Files" --text="Output-Extesnion:" --entry-text "ext")
+zenity --width=700 --height=500 --info --title='Files To Have Speed Altered:' --text="$list\nNewExt: $extout"
+  if [ $? == 1 ]; then exit 0; fi
+
+for i in ${list}; do
+dir=${i%/*}
+fn="$(basename "${i}")"
+fnbase="${fn%.*}"
+#ACTION
+ffmpeg -i $i ${dir}/${fnbase}.${extout}
+done
+;;
+3)
+file=$(zenity --file-selection --title='SPEED: Select AV file')
+spdf=$(zenity --width=400 --height=200 --entry --title='SPEED FACTOR' --text="-1.0 to 2.0:" --entry-text "1.0")
+  if [ $? == 1 ]; then exit 0; fi
+# Prepare variables
+dir=${file%/*}
+fn="$(basename "${file}")"
+fnbase="${fn%.*}"
+fnext="${fn##*.}"
+dir_fnbase="${dir}/${fnbase}"
+#ACTION
+ffmpeg -i "${dir_fnbase}.${fnext}" -vf "setpts=(PTS-STARTPTS)/${spdf}" -af atempo=$spdf "${dir_fnbase}_${spdf}X.${fnext}"
+;;
+4)
+list=$(zenity --title="Select Files" --file-selection --multiple --separator=$'\n')
+spdf=$(zenity --width=400 --height=200 --entry --title='SPEED FACTOR' --text="-1.0 to 2.0:" --entry-text "1.0")
+zenity --width=700 --height=500 --info --title='Files To Have Speed Altered:' --text="$list\nFactor: $spdf"
+  if [ $? == 1 ]; then exit 0; fi
+
+for i in ${list}; do
+dir=${i%/*}
+fn="$(basename "${i}")"
+fnbase="${fn%.*}"
+fnext="${fn##*.}"
+dir_fnbase="${dir}/${fnbase}"
+#ACTION
+ffmpeg -i "${dir_fnbase}.${fnext}" -vf "setpts=(PTS-STARTPTS)/${spdf}" -af atempo=$spdf "${dir_fnbase}_${spdf}X.${fnext}"
+done
+;;
+5)
+list=$(zenity --title='Select AV Files To JOIN' --file-selection --multiple --separator=$'\n' --file-filter='*.*')
+zenity --width=700 --height=500 --info --title='Files To Be Joined:' --text="$list"
+outname=$(zenity --width=400 --height=200 --entry --title='NAME OUTPUT FILE' --text='Name Output File with ext:' --entry-text "name.ext")
+outdir=$(zenity --file-selection --directory --title='Select Output Folder')
+zenity --width=700 --height=700 --info --title='Files To Be Joined:' --text="$list\n---Destination---\n$outdir/$outname"
+  if [ $? == 1 ]; then exit 0; fi
+echo -e "$list" >/tmp/join.txt
+sed -i -e "s/^/file '/" /tmp/join.txt
+sed -i -e "s/$/'/" /tmp/join.txt
+#ACTION
+ffmpeg -f concat -safe 0 -i /tmp/join.txt -c copy ${outdir}/$outname
+rm /tmp/join.txt
+;;
+*) exit 0;;
+esac
+

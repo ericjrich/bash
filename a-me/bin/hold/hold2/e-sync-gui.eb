@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+#e-sync-gui.eb
+#2022-10-21-1715 EJR
+#===========================================================================
+
+#idk ??    05-SyncFoldersReal:
+
+SRCFLD=$(zenity --width=600 --height=420 --file-selection --directory --title="SYNC REAL RUN: Select Src Folder")
+  if [ $? == 1 ]; then exit 0; fi
+
+DSTFLD=$(zenity --width=600 --height=420 --file-selection --directory --title="SYNC REAL RUN: Select Dst Folder")
+  if [ $? == 1 ]; then exit 0; fi
+
+zenity --width=600 --height=200 --question --text="GOING TO SYCN: \n $SRCFLD/ \n TO \n $DSTFLD/ \n \n ...............Are you sure?................."
+  if [ $? == 1 ]; then exit 0; fi
+clear
+echo "-----------------------------------------------------------------"
+rsync -avh --delete --exclude=lost+found/ $SRCFLD/ $DSTFLD/
+echo "-----------------------------------------------------------------"
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+#
+#
+#

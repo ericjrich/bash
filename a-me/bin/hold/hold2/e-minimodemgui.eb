@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+#2022-11-11-2244 EJR
+#===========================================================================
+# jumpto function
+function jumpto { label=$1; cmd=$(sed -n "/$label:/{:a;n;p;ba};" $0 | grep -v ':$'); eval "$cmd"; exit; }; start=${1:-"start"}; jumpto $start
+start:
+#==Set Var Ejr=============================================================
+
+#===========================================================================
+mainmenu:
+mainmenu=$(zenity --width=360 --height=420 --list --title "Gui App With Sub Menus" --text "Choose?" --column Options "aSend" "aRecv" "QUIT")
+if [ "$mainmenu" = "aSend" ]; then jumpto aSend
+elif [ "$mainmenu" = "aRecv" ]; then jumpto aRecv
+elif [ "$mainmenu" = "QUIT" ]; then exit 0
+else exit 0; fi
+#=====================================================================================================================
+#---------------------------------------------------------------------------------------------------------------------
+#=====================================================================================================================
+aSend:
+  clear
+  zenity --width=600 --height=420 --text-info --editable --title "Enter Text To Send" > /tmp/mms.txt
+    if [ $? == 1 ]; then jumpto mainmenu; fi
+  cat /tmp/mms.txt | minimodem --tx -8 30 --samplerate=19000
+#  sleep 3s
+  zenity --width=600 --height=200 --title="Repeat?" --question --text="Try Again???"
+    #yes=0 no=1
+    if [ $? == 0 ]; then jumpto aSend; fi
+jumpto mainmenu
+#===========================================================================
+aRecv:
+  clear
+  minimodem --rx-one -8 30 -q --tx-carrier -c 3 --samplerate=19000 >/tmp/mmr.txt
+  zenity --text-info --title "This Is Your Message" --filename="/tmp/mmr.txt"
+  zenity --width=600 --height=200 --title="Repeat?" --question --text="Try Again???"
+    #yes=0 no=1
+    if [ $? == 0 ]; then jumpto aRecv; fi
+jumpto mainmenu

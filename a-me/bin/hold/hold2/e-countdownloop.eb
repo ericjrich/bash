@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+#e-countdownloop.eb
+#2022-10-21-1715 EJR
+#===========================================================================
+
+while :; do 
+  min=15
+  sec=0
+
+  while [ $min -ge 0 ]; do
+    while [ $sec -ge 0 ]; do
+      echo -ne "$min m:$sec s\033[0K\r"
+      let "sec=sec-1"
+      sleep 1
+    done
+    sec=59
+    let "min=min-1"
+  done
+  spd-say "Move And Drink"
+done  
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+#
+#
+#

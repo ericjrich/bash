@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#20221229 0900 EJR
+
+#~~xdo type~~good for vm without clipboard enabled~~~~~~~~~
+#e.xdotype.5sec.ef() {
+  typezzz="$@"
+  clear; echo '5'; sleep 1; clear; echo '4'; sleep 1; clear; echo '3'; sleep 1; clear; echo '2'; sleep 1; clear; echo '1'; sleep 1; clear
+  xdotool type "$typezzz"
+#; }

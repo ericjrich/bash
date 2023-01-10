@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+#2022-12-30 0820 est EJR
+#===========================================================================
+
+#remove old tmp file
+  rm /tmp/eviddl.tmp
+
+#URL??
+  zurl=$(zenity --entry --title="Enter Bitchute url to scrub for mp4" --text="Enter URL:" --entry-text "")
+    if [ $? == 1 ]; then exit 0; fi
+#Destination Folder??
+  zdst=$(zenity --width=600 --height=420 --file-selection --directory --title="Select Dst Folder")
+    if [ $? == 1 ]; then exit 0; fi
+
+#Prefix Name??
+  zname=$(zenity --entry --title="Name The mp4" --text="Enter name without the extension:" --entry-text "name")
+    if [ $? == 1 ]; then exit 0; fi
+
+#DL html
+  wget -O /tmp/eviddl.tmp $zurl
+
+#Get Link To Video
+  zvidurl=$(grep -oP '(?<=src=")[^"]+.mp4(?=")' /tmp/eviddl.tmp)
+
+#test & remove
+  echo $zvidurl
+  rm /tmp/eviddl.tmp
+
+#DL vid to Destination Folder
+  wget -O $zdst/$zname.mp4 $zvidurl
+
+#remove old tmp file
+  rm /tmp/eviddl.tmp

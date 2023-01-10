@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+#20230110 1240 est EJR
+shopt -s dotglob
+#= JumpTo Function =========================================================
+function jumpto { label=$1; cmd=$(sed -n "/$label:/{:a;n;p;ba};" $0 | grep -v ':$'); eval "$cmd"; exit; }
+start=${1:-"start"} ; jumpto $start
+#===========================================================================
+start:
+#===========================================================================
+mainmenu:
+choice=$(zenity --width=360 --height=420 --list --title 'EJR MINT 21.1 Setup' --text 'Choose?' --column Options "01-Installs" "02-homebackup" "03-homerestore" "QUIT")
+if [ "$choice" = "01-Installs" ]; then jumpto 01-Installs
+elif [ "$choice" = "02-homebackup" ]; then jumpto 02-homebackup
+elif [ "$choice" = "03-homerestore" ]; then jumpto 03-homerestore
+elif [ "$choice" = "QUIT" ]; then exit
+else exit 0; fi
+#===========================================================================
+01-Installs:
+
+clear
+zenity --question --text='Are You Sure You Want To Install Software???'; if [ $? == 1 ]; then jumpto mainmenu; fi
+#sudo apt purge --auto-remove -y
+echo '20220102 1220est EJR'
+tdir=/tmp/t
+chrome='https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb'
+zapt='audacity bleachbit boxes caca-utils cowsay dialog exiftool faketime fdupes feh ffmpeg figlet gifsicle imagemagick img2pdf jp2a minimodem pinta qalc rclone scrcpy shotcut simplescreenrecorder speech-dispatcher surf tree virtualbox virtualbox-ext-pack webcamoid webp xautomation xbindkeys xdotool yad zathura zenity'
+echo -e "\033[33m===========================YOUR VARIABLES===========================\033[0m"
+echo -e "\033[33m\$tdir\033[32m= TMP DIR LOCATION\033[0m"
+echo '------------------------------------'
+echo -e "\033[36m$tdir\033[0m"
+echo ''
+echo -e "\033[33m\$chrome\033[32m= WGET URL FOR CHROME DEB\033[0m"
+echo '------------------------------------'
+echo -e "\033[36m$chrome\033[0m"
+echo ''
+echo -e "\033[33m\$zapt\033[32m= APT INSTALL LIST\033[0m"
+echo '------------------------------------'
+t=$(for i in $zapt; do echo $i; done | sort)
+t=$(echo "$t" | column)
+echo -e "\033[36m$t\033[0m"; echo ''
+echo 'Do We Want To Run This LINUX MINT 21.1 SETUP???'; echo 'IF YOU WANT TO LEAVE CTRL-C NOW'; read idkfa; clear
+#----------------------------------------------------------------------------------
+echo '====Making A TMP DIR===='; echo "$tdir/"
+ rm -r $tdir/; mkdir $tdir/
+echo 'Downloading chrome'
+ wget -O $tdir/chrome.deb $chrome
+echo 'Installing Chrome'
+ sudo apt update; sudo gdebi $tdir/chrome.deb --n
+echo 'removing the our tmp dir'
+ rm -r $tdir/
+echo 'Going to install our apt list now'
+ sudo apt update; for i in ${zapt}; do sudo apt install -y $i; done
+echo 'configuring vboxuser'
+ sudo usermod -a -G vboxusers $USER
+echo 'Installing Vidcutter From FLATHUB'
+ sudo flatpak install -y flathub com.ozmartians.VidCutter
+read -p 'DONE HIT ENTER' idgaf
+jumpto mainmenu
+#===========================================================================
+02-homebackup:
+
+# tar -cvpzf backup.tar.gz --exclude=/backup.tar.gz --one-file-system /
+ cd /
+zhome=$(zenity --width=600 --height=420 --file-selection --directory --title='Select Home Folder To TAR' --filename="/"); if [ $? == 1 ]; then jumpto mainmenu; fi
+zdst=$(zenity --width=600 --height=420 --file-selection --directory --title='Select DIR To Save TAR' --filename="/"); if [ $? == 1 ]; then jumpto mainmenu; fi
+zname=$(zenity --entry --title='Name Your Home Tar' --text='Name:' --entry-text "mint"); if [ $? == 1 ]; then jumpto mainmenu; fi
+ztime=$(date '+%Y%m%d-%H%M'); ztar="$zdst/$ztime-$zname.tar"
+zxd='
+--exclude='.cache'
+--exclude='.config/cinnamon-monitors.xml'
+--exclude='.config/pulse'
+--exclude='.local/share/gvfs-metadata'
+--exclude='.local/share/recently-used.xbel'
+--exclude='.xsession-errors'
+--exclude='.xsession-errors.old'
+'
+echo -e "\033[33mGoing to tar your home folder \033[36m $zhome \033[33m to a tar at \033[36m $ztar\033[0m"
+echo -e "\033[33mexlcudes \n \033[36m$zxd\033[0m"
+read -p 'HIT ENTER' idgaf
+zenity --question --text='Are You Sure You Want To Continue'; if [ $? == 1 ]; then jumpto mainmenu; fi
+ cd $zhome/; tar $zxd -cpf $ztar ./
+
+jumpto mainmenu
+#===========================================================================
+03-homerestore:
+
+# sudo tar -xvpzf /path/to/backup.tar.gz -C /media/whatever --numeric-owner
+ cd /
+ztmp=/tmp/zhome
+ztar=$(zenity --file-selection --title='Select Your Tar File' --filename="/"); if [ $? == 1 ]; then jumpto mainmenu; fi
+zhome=$(zenity --width=600 --height=420 --file-selection --directory --title='Select Home Folder To Overwrite' --filename="/"); if [ $? == 1 ]; then jumpto mainmenu; fi
+echo -e "\033[33mGoing to extract your tar \033[36m$ztar\033[33m to home-dir \033[36m $zhome\033[0m"
+read -p 'HIT ENTER' idgaf
+zenity --question --text='Are You Sure You Want To Continue'; if [ $? == 1 ]; then jumpto mainmenu; fi
+ mkdir $ztmp/; tar -xpf $ztar -C $ztmp/; rsync -avh --delete --exclude=lost+found/ $ztmp/ $zhome/; rm -r $ztmp/
+ rm -r ~/.config/pulse/
+# AUDIO FIX
+ sudo rm /var/lib/alsa/asound.state; sudo alsactl init; sudo alsactl store; sudo alsa force-reload; pulseaudio -k
+ sudo sh -c "echo 0 > /sys/module/snd_hda_intel/parameters/power_save"; sudo sh -c "echo N > /sys/module/snd_hda_intel/parameters/power_save_controller"
+jumpto mainmenu
+#===========================================================================

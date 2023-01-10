@@ -1,0 +1,199 @@
+#!/usr/bin/env bash
+#20221220 2050 EJR
+
+#AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+function jumpto { label=$1; cmd=$(sed -n "/$label:/{:a;n;p;ba};" $0 | grep -v ':$'); eval "$cmd"; exit; }
+start=${1:-"start"} ; jumpto $start
+start:
+#ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+
+#AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+#!!!!!!!!!!!!!!!!
+jumpto 99-StartUp
+#!!!!!!!!!!!!!!!!
+
+#===========================================================================
+mainmenu:
+choice=$(zenity --width=640 --height=480 --list --title "SkelMaker" --text "Choose?" --column Options "01-AddFiles" "02-AddDirs" "03-BgColor" "04-REVIEW" "05-modifyskel" "QUIT")
+if [ "$choice" = "01-AddFiles" ]; then jumpto 01-AddFiles
+elif [ "$choice" = "02-AddDirs" ]; then jumpto 02-AddDirs
+elif [ "$choice" = "03-BgColor" ]; then jumpto 03-BgColor
+elif [ "$choice" = "04-REVIEW" ]; then jumpto 04-REVIEW
+elif [ "$choice" = "05-modifyskel" ]; then jumpto 05-modifyskel
+elif [ "$choice" = "QUIT" ]; then rm -r /tmp/a.txt /tmp/b.txt /tmp/z.txt /tmp/info.txt /tmp/fskel/; clear echo "sudo rsync -avh --delete --exclude=lost+found/ $bskel/ $skel/"; exit 0
+else rm -r /tmp/a.txt /tmp/b.txt /tmp/z.txt /tmp/info.txt /tmp/fskel/; clear echo "sudo rsync -avh --delete --exclude=lost+found/ $bskel/ $skel/"; exit 0
+fi
+#ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+
+#AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+01-AddFiles:
+#== ADD USER FILES TO COPY TO SKEL ===
+cd $user/
+z=$(zenity --file-selection --multiple --separator=$'\n' --title='Add User Files To Skel' --filename="$user/"); echo "$z" >>/tmp/a.txt
+z=$(zenity --width=1000 --height=600 --text-info --editable --title='Info: FilesList (You Can Edit Here)' --filename="/tmp/a.txt"); echo "$z" >/tmp/a.txt
+zenity --width=1000 --height=600 --text-info --title='Results' --filename="/tmp/a.txt"
+zenity --width=400 --height=200 --question --title='Would You Like To Add More?' --text='Keep Adding Files?'
+if [ $? == 0 ]; then jumpto $choice; fi
+jumpto mainmenu
+#ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+
+#AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+02-AddDirs:
+#== ADD USER DIRS TO SYNC W/ SKEL ===
+cd $user/
+z=$(zenity --file-selection --directory --multiple --separator=$'\n' --title='Add User Dirs To Skel' --filename="$user/"); echo "$z" >>/tmp/b.txt
+z=$(zenity --width=1000 --height=600 --text-info --editable --title='Info: DirsList (You Can Edit Here)' --filename="/tmp/b.txt"); echo "$z" >/tmp/b.txt
+zenity --width=1000 --height=600 --text-info --title='Results' --filename="/tmp/b.txt"
+zenity --width=400 --height=200 --question --title='Would You Like To Add More?' --text='Keep Adding Dirs?'
+if [ $? == 0 ]; then jumpto $choice; fi
+jumpto mainmenu
+#ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+
+#AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+03-BgColor:
+#== Wallpaper Color ===================
+cd /usr/share/backgrounds/
+z=$(zenity --file-selection --multiple --separator=$'\n' --title='Select Images To Wipe With A Color' --filename="/usr/share/backgrounds/")
+if [ $? == 1 ]; then jumpto mainmenu; fi
+bgcolor=$(zenity --title='Select Your New Background Color' --color-selection --color="#021930")
+if [ $? == 1 ]; then jumpto mainmenu; fi
+for i in ${z}; do sudo convert -size 1024x576 xc:"$bgcolor" "$i"; done
+zenity --width=400 --height=200 --question --title='Would You Do Another?' --text='Do Another?'
+if [ $? == 0 ]; then jumpto $choice; fi
+jumpto mainmenu
+#ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+
+#AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+04-REVIEW:
+#info
+rm /tmp/info.txt
+a=$(cat /tmp/a.txt); b=$(cat /tmp/b.txt)
+zenity --title='The BackGround Color You Chose (IF YOU DIDNT PICK ONE DISREGAURD)' --color-selection= --color="$bgcolor"
+
+#HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+echo "------------------------SUMMARY--------------------------------" >/tmp/info.txt
+echo "SOURCE      DIR: $user/" >>/tmp/info.txt
+echo "DESTINATION DIR: $skel/" >>/tmp/info.txt
+echo '' >>/tmp/info.txt
+echo "== Files To Be Copied ==========================================" >>/tmp/info.txt
+echo "$(cat /tmp/a.txt)" >>/tmp/info.txt
+echo '' >>/tmp/info.txt
+echo "== Dirs To Be Synced ==========================================" >>/tmp/info.txt
+echo "$(cat /tmp/b.txt)" >>/tmp/info.txt
+#HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+echo '' >>/tmp/info.txt
+echo '== LOOP: A ======================================================================' >>/tmp/info.txt
+for i in ${a}; do
+ j=$(echo "$i" | sed "s#$user#$skel#g")
+ k=$(echo ${j%/*})
+ echo "MAKE: $k" >>/tmp/info.txt
+ echo "COPY: $i --TO-- $k/" >>/tmp/info.txt
+ echo '' >>/tmp/info.txt
+done
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+echo '' >>/tmp/info.txt
+echo '== LOOP: B ======================================================================' >>/tmp/info.txt
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+for i in ${b}; do
+ j=$(echo "$i" | sed "s#$user#$skel#g")
+ k=$(echo ${j%/*})
+ echo "MAKE: $k" >>/tmp/info.txt
+ echo "SYNC: $i/ --TO-- $k/" >>/tmp/info.txt
+ echo '' >>/tmp/info.txt
+done
+zenity --width=1300 --height=700 --text-info --title='Dry-Run' --filename="/tmp/info.txt"
+#HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+
+jumpto mainmenu
+#ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+
+#AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+05-modifyskel:
+#~~Are You Insane~~~~
+zenity --width=400 --height=200 --question --title='Going To Make A Fake Skel Folder In TMP' --text='Ready?'; if [ $? == 1 ]; then jumpto mainmenu; fi
+#~~VARS~~~~~~~~~~~~
+#(already defined)
+# $user $skel
+a=$(cat /tmp/a.txt)
+b=$(cat /tmp/b.txt)
+fskel=/tmp/fskel
+bskel=/tmp/skel
+rsync -avh --delete --exclude=lost+found/ "$skel/" "$fskel/"
+rsync -avh --delete --exclude=lost+found/ "$skel/" "$bskel/"
+#------FOR LOOP: /tmp/a.txt -------
+for i in ${a}; do
+ j=$(echo "$i" | sed "s#$user#$fskel#g")
+ k=$(echo ${j%/*})
+ mkdir -p "$k"
+ cp "$i" "$k/"
+done
+#------FOR LOOP: /tmp/b.txt -------
+for i in ${b}; do
+ j=$(echo "$i" | sed "s#$user#$fskel#g")
+ k=$(echo "$j")
+ mkdir -p "$k"
+ rsync -avh --delete --exclude=lost+found/ "$i/" "$k/"
+done
+#see results of fake skel
+cd "$fskel/"; zenity --file-selection --title='Here Is The Fake Skel' --filename="$fskel/"
+#ask if you want to do the real deal
+zenity --width=600 --height=300 --question --title='Should We Modify Skel Now' --text='Are You Ready To Actually Modify Skel Now?'; if [ $? == 1 ]; then jumpto mainmenu; fi
+zenity --width=600 --height=300 --question --title='Not Too Late Too Back Out' --text='Are You Sure?'; if [ $? == 1 ]; then jumpto mainmenu; fi
+sudo rsync -avh --delete --exclude=lost+found/ "$fskel/" "$skel/"
+rm -r "$fskel"
+cd "$skel/"; zenity --file-selection --title='Here Is The Real Skel Now' --filename="$skel/"
+zenity --width=600 --height=400 --info --title='IMPORTANT INFO' --text="I backed-up your origianl skel just in case.\n Its at $bskel/ \nYou can restore it with this command\n sudo rsync -avh --delete --exclude=lost+found/ $bskel/ $skel/ \n You might want to copy that down or screenshot it."
+jumpto mainmenu
+#ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+
+#AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+99-StartUp:
+shopt -s dotglob
+gsettings set org.gtk.Settings.FileChooser show-hidden true
+gsettings set org.gtk.Settings.FileChooser sort-directories-first true
+rm -r /tmp/a.txt /tmp/b.txt /tmp/z.txt /tmp/info.txt /tmp/fskel/
+#== COPY FROM USER TO SKEL=============
+cat << EOF > /tmp/a.txt
+.config/apt-notifierrc
+.config/compton.conf
+.config/dconf/user
+.config/mimeapps.list
+.config/user-dirs.dirs
+.config/user-dirs.locale
+.config/xfce4/helpers.rc
+.config/xfce4/panel/datetime-1.rc
+.config/xfce4/panel/docklike-2.rc
+.config/xfce4/panel/whiskermenu-20.rc
+.config/xfce4/terminal/terminalrc
+.config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml
+.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml
+.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml
+.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml
+.config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml
+.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
+.config/yad.conf
+.local/share/mx-tweak-data/mx.tweak.template
+.local/share/xfce4/helpers/custom-MailReader.desktop
+EOF
+#== MAKE THESE DIRS IN SKEL============
+cat << EOF > /tmp/b.txt
+Desktop
+Documents
+Downloads
+Music
+Pictures
+Public
+Templates
+Videos
+EOF
+#== ASK WHERE DIRS ARE FOR SKEL AND USER=========
+skel=$(zenity --file-selection --directory --title='SKEL DIR?' --filename="/etc/skel/")
+user=$(zenity --file-selection --directory --title='USER DIR?' --filename="$HOME/")
+sed -i "s|^|$user/|g" "/tmp/a.txt"
+sed -i "s|^|$user/|g" "/tmp/b.txt"
+a=$(cat /tmp/a.txt)
+b=$(cat /tmp/b.txt)
+jumpto mainmenu
+#===========================================================================
+#ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ

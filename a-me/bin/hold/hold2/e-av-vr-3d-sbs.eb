@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#e-av-vr-3d-sbs.eb
+#2022-10-21-1715 EJR
+#===========================================================================
+
+#make 3d sbs video from 2 vids Left and Right
+left=$(zenity --file-selection --title="3D-SBS: Select Left Video")
+  if [ $? == 1 ]; then exit 0; fi
+right=$(zenity --file-selection --title="3D-SBS: Select Right Video")
+  if [ $? == 1 ]; then exit 0; fi
+outfolder=$(zenity --file-selection --directory --title="Select Output Folder")
+  if [ $? == 1 ]; then exit 0; fi
+sbsname=$(zenity --width=400 --height=200 --entry --title="Name Output Video" --text="Name Output Video And Extension:" --entry-text "3d-sbs-output.mp4")
+  if [ $? == 1 ]; then exit 0; fi
+
+ffmpeg -i $left -i $right -filter_complex framepack=sbs $outfolder/$sbsname
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+#
+#
+#

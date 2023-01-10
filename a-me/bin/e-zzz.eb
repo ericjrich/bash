@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+#20221219 1404 EJR
+shopt -s dotglob
+#= JumpTo Function =========================================================
+function jumpto { label=$1; cmd=$(sed -n "/$label:/{:a;n;p;ba};" $0 | grep -v ':$'); eval "$cmd"; exit; }
+start=${1:-"start"} ; jumpto $start
+#===========================================================================
+start:
+#===========================================================================
+mainmenu:
+choice=$(zenity --width=360 --height=420 --list --title "Speed Up Mint" --text "Choose?" --column Options "01-NAME" "02-NAME" "QUIT")
+if [ "$choice" = "01-NAME" ]; then jumpto 01-NAME
+elif [ "$choice" = "02-NAME" ]; then jumpto 02-NAME
+elif [ "$choice" = "QUIT" ]; then exit
+else exit 0; fi
+#===========================================================================
+01-NAME:
+ echo '1'
+jumpto mainmenu
+#===========================================================================
+02-NAME:
+ echo '2'
+jumpto mainmenu
+#===========================================================================
+#========================================================================================
+# MY NEW ZENITY NOTES BELOW HERE
+#========================================================================================
+#====The Options======
+#  *[zenity]
+#  └──*[ --width=640 --height=480 --title=""]
+#     ├──*[ --info]
+#     │  └──*[ --text=""]
+#     │  └──*[ --text="$(cat z.txt)"]
+#     ├──*[ --question]
+#     │  └──*[ --text=""]
+#     │  └──*[ --text="$(cat z.txt)"]
+#     ├──*[ --text-info]
+#     │  └──*[ --editable --filename="/tmp/z.txt"]
+#     ├──*[ --color-selection]
+#     │  └──*[ --color=""] ...this is preset to use...
+#     │     └──*[Examples: --color="#111111" --color="rgb(100,100,100)" --color="$VAR"]
+#     ├──*[ -- entry]
+#     │  └──*[ --entry-text="suggested"]
+#     │  └──*[ --text="Instructions Above Their Text"]
+#     └──*[ --file-selection]..$> gsettings set org.gtk.Settings.FileChooser show-hidden true
+#        └──*[ --directory --multiple --separator=$'\n' --file-filter='*.*']
+#
+#== PUT A STRING TOGETHER BELOW =========================================================
+#
+#== STRING PART 1 ==========================
+# zenity --width=640 --height=480 --title=""
+#
+#== STRING PART 2 ==========================
+#
+# --info --text=""
+# --question --text=""
+# --text-info --filename="/tmp/ABC.txt"
+# --text-info --filename="/tmp/ABC.txt" --editable
+# --color-selection
+# --color-selection --color=""
+# --entry --entry-text="type here"
+# --file-selection
+# --file-selection --multiple --separator=$'\n'
+# --file-selection --multiple --separator=$'\n' --file-filter='*'
+# --file-selection --directory
+# --file-selection --directory --multiple --separator=$'\n'
+# --file-selection --directory --multiple --separator=$'\n' --file-filter='*'
+#
+#========================================================================================
+# END OF MY NEW ZENITY NOTES
+#========================================================================================
+
+
+ZZZ-NOT-A-REAL-CHOICE-FOR-NOTES
+#========================================================================================
+# MY OLD ZENITY NOTES BELOW HERE
+#========================================================================================
+# --text-info
+
+#~~if~~~~
+zenity blah blah; if [ $? == 1 ]; then jumpto mainmenu; fi  #~~ To "MainMenu"
+zenity blah blah; if [ $? == 1 ]; then exit 0; fi           #~~ Exit
+zenity blah blah; if [ $? == 1 ]; then jumpto $choice; fi   #~~ If NO loop this submenu
+zenity blah blah; if [ $? == 0 ]; then jumpto $choice; fi   #~~ If YES loop this submenu
+
+#========================================================================================
+# END OF OND ZENITY NOTES
+#========================================================================================
+feh picture.png
+zathura peedeefff.pdf
+
+
+
+
+jumpto mainmenu
+#===========================================================================

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#20221229 0900 EJR
+#~~brightness controller~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#bash -ic 'e-bright.eb -'
+#bash -ic 'e-bright.eb +'
+#e.bright.ef() {
+  opzzz="$1"
+  sb=$(xrandr --verbose | awk '/Brightness/ { print $2; exit }')
+  tv=$(xrandr -q | grep ' connected' | head -n 2 | cut -d ' ' -f1)
+
+  case $opzzz in
+    +) nb=$(echo "$sb+.1" | bc -l);;
+    -) nb=$(echo "$sb-.1" | bc -l);;
+    *) notify-send "Bad Syntax";;
+  esac
+  for i in ${tv}; do xrandr --output "$i" --brightness "$nb"; done
+  zenity --notification --text "Brightness: $nb" --timeout=1
+#; }

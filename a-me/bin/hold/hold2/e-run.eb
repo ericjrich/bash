@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+#e-run.eb
+#2022-10-21-1715 EJR
+#===========================================================================
+
+#nohup $@ >/dev/null 2>&1 &
+$@ >>/dev/null 2>&1 & disown
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+#
+#
+#

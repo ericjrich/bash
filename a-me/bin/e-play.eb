@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#20221229 0900 EJR
+
+#~~listen to music~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#e.play.ef() {
+
+ playi1=$1
+ playi2=$2
+ playdir=$HOME/a-me/Music
+ case $playi1 in
+  a|r)
+    playt=$(sed -n $playi2\p $playdir/$playi1.txt)
+    eval $(echo ptrack=$playt)
+    ffplay "$ptrack" >>/dev/null 2>&1 & disown
+  ;;
+  *) ffplay $playi1 >>/dev/null 2>&1 & disown
+  ;;
+  esac
+
+#; }

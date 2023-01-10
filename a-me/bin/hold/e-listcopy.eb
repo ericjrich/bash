@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#20221229 0900 EJR
+#~~list copy or move~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#e.listcm.ef() {
+  shopt -s dotglob
+  clear
+  echo '_____Copy/Move Items In A ListFile_____'; echo ''
+  echo ' C - Copy'; echo ' M - Move'; echo ''; read -p 'Enter Choice <ENTER>' opzzz
+  listzzz=$(zenity --file-selection --title='Select Your ListFile'); if [ $? == 1 ]; then exit 0; fi
+  outzzz=$(zenity --file-selection --directory --title="Select Output Folder"); if [ $? == 1 ]; then exit 0; fi
+  case $opzzz in
+    c|C) for f in $(cat ${listzzz}); do cp $f $outzzz; done;;
+    m|M) for f in $(cat ${listzzz}); do mv $f $outzzz; done;;
+    *|--help|-help|411) echo 'help file';;
+  esac
+#; }

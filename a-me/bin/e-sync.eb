@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+#20221216-1450 est EJR
+shopt -s dotglob
+#== VARIABLES ==
+x=/media/$USER/ext-2tb
+xd=$x/ext-usb128
+u=/media/$USER/ext-usb128
+uf=$u/setup/fs
+uh=$uf/home/user
+us=$uf/etc/skel
+#== MENU ==
+clear
+echo '------ EJR SYNC UTILITY ------'
+echo '1 - USB-TO: PC & EXT-HDD'
+echo '2 - USB-TO: PC'
+echo '3 - USB-TO: EXT-HDD'
+echo '4 - GUI: Choose Your Own'
+read opzzz; clear
+#== CASES ==
+case $opzzz in
+1)
+cd $uh/
+#pc
+cp .bash_aliases .bashrc .xbindkeysrc.scm ~/
+rsync -avh --delete --exclude=lost+found/ a-me/ ~/a-me/
+#ext
+rsync -avh --delete --exclude=lost+found/ $u/ $xd/
+cd -
+;;
+2)
+cd $uh/
+#pc
+cp .bash_aliases .bashrc .xbindkeysrc.scm ~/
+rsync -avh --delete --exclude=lost+found/ a-me/ ~/a-me/
+cd -
+;;
+3)
+rsync -avh --delete --exclude=lost+found/ $u/ $xd/;;
+4)
+ingui=$(zenity --width=600 --height=420 --file-selection --directory --title='SYNC: Select Input Dir')
+outgui=$(zenity --width=600 --height=420 --file-selection --directory --title='SYNC: Select Output Dir')
+zenity --width=600 --height=200 --question --text="GOING TO SYCN: \n$ingui/ \n TO \n$outgui/ \n \n ..Are you sure?..."
+  if [ $? == 1 ]; then exit 0; fi
+sudo rsync -avh --delete --exclude=lost+found/ $ingui/ $outgui/
+;;
+*) exit 0;;
+esac

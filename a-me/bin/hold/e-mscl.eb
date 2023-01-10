@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+#2022-12-09-1910 EJR
+#Part Of A Script Set: e-msmv.eb e-mscl.eb
+#Dependencies= xdotool python3
+case $@ in
+
+  "1")
+  xdotool click 1
+  ;;
+  "2")
+  xdotool click 2
+  ;;
+  "3")
+  xdotool click 3
+  ;;
+  "4")
+  xdotool click 4
+  ;;
+  "5")
+  xdotool click 5
+  ;;
+  "la")
+  xdotool getmouselocation |awk -F'[ :]' '{print $2,$4}' >/tmp/msla.txt
+  ;;
+  "lb")
+  xdotool getmouselocation |awk -F'[ :]' '{print $2,$4}' >/tmp/mslb.txt
+  ;;
+  "lc")
+  msla=$(cat /tmp/msla.txt)
+  mslb=$(cat /tmp/mslb.txt)
+  sleep .1
+  xdotool mousemove $msla
+  sleep .1
+  xdotool mousedown 1
+  sleep .1
+  xdotool mousemove $mslb
+  sleep .1
+  xdotool mouseup 1
+  ;;
+  *)
+
+  ;;
+esac

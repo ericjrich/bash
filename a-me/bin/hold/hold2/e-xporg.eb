@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+#e-xporg.eb
+#be in s or t folder
+#1 creates the placeholder in dl
+#2 renames the vids with the e tag
+#3 adds duration
+#4 sorts into quality folder
+#-----REMOVE TXT FILES------------------------
+rm q0.txt q1.txt q2.txt q3.txt
+
+for f in $(ls *.mp4)
+  do
+    oname="$f"
+    vname="${f%%.*}-e.mp4"
+    phname="${f%%.*}.mp4"
+    touch ../dl/$oname
+    mv $oname e-$oname
+  done
+for i in *.mp4 #============ STARTING THE LOOP ====================================================
+  do
+    #-----MAKING MY VARIABLES---------------------------------------------------------------------
+    edo=$(ffprobe -v error -select_streams v:0 -show_entries stream=duration -of csv=s=x:p=0 "$i")
+    edo=${edo/.*}
+    edo=$((edo / 60))
+    ed=${edo/.*}
+    mv $i "${ed}_m-${i}"
+done
+for i in *.mp4 #============ STARTING THE LOOP ====================================================
+  do
+    #-----MAKING MY VARIABLES---------------------------------------------------------------------
+    eqw=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=s=x:p=0 "$i")
+    eqh=$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of csv=s=x:p=0 "$i")
+    if [[ $eqw -ge $egh ]]; then eqa="$eqw"; else eqa="$eqh"; fi
+    #-----MAKING MY TXT FILES---------------------------------------------------------------------
+    if (( eqa < 480 )); then qtxt="q0.txt"
+    elif (( eqa >= 480 && eqa < 720 )); then qtxt="q1.txt"
+    elif (( eqa >= 720 && eqa < 1080 )); then qtxt="q2.txt"
+    elif (( eqa >= 1080)); then qtxt="q3.txt"
+    fi
+  echo "$i" >> "$qtxt"
+done
+mkdir q0 q1 q2 q3
+for f in $(cat q0.txt); do mv $f q0/; done
+for f in $(cat q1.txt); do mv $f q1/; done
+for f in $(cat q2.txt); do mv $f q2/; done
+for f in $(cat q3.txt); do mv $f q3/; done
+rm q0.txt q1.txt q2.txt q3.txt

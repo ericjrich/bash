@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+#e-av-quality-mover.eb
+#2022-10-21-1715 EJR
+#===========================================================================
+
+
+#-----REMOVE TXT FILES------------------------
+rm q0.txt q1.txt q2.txt q3.txt
+
+for i in *.mp4 #============ STARTING THE LOOP ====================================================
+  do 
+    #-----MAKING MY VARIABLES---------------------------------------------------------------------
+    eqw=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=s=x:p=0 "$i")
+    eqh=$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of csv=s=x:p=0 "$i")
+    if [[ $eqw -ge $egh ]]; then eqa="$eqw"; else eqa="$eqh"; fi
+    #-----MAKING MY TXT FILES---------------------------------------------------------------------
+    if (( eqa < 480 )); then qtxt="q0.txt"
+    elif (( eqa >= 480 && eqa < 720 )); then qtxt="q1.txt"
+    elif (( eqa >= 720 && eqa < 1080 )); then qtxt="q2.txt"
+    elif (( eqa >= 1080)); then qtxt="q3.txt"    
+    fi
+  echo "$i" >> "$qtxt"
+done
+echo "Press enter to quit now or type y to move the files to q directories"
+read econt
+if [[ "$econt" != "y" ]]; then exit 0; fi
+mkdir q0 q1 q2 q3
+for f in $(cat q0.txt); do mv $f q0/; done
+for f in $(cat q1.txt); do mv $f q1/; done
+for f in $(cat q2.txt); do mv $f q2/; done
+for f in $(cat q3.txt); do mv $f q3/; done
+echo "Press enter to quit now or type y the text files"
+read econta
+if [[ "$econta" != "y" ]]; then exit 0; fi
+rm q0.txt q1.txt q2.txt q3.txt
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+#
+#
+#

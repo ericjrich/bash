@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+#20230110-1143 est EJR
+#I Set: linux mint to not auto mount fs
+#I Set: Phones USB Default To Charging
+#I Set: Phones USB-Debugging to ON
+#YOU CAN UNSTRUST DEVICES ON YOUR PHONE SIDE TOO IF YOU WANT
+clear
+ip=$(adb shell ip route | awk '{print $9}' | tail -1)
+echo '......Going To Display Phone......'
+echo ''
+scrcpy -s $ip >>/dev/null 2>&1 & disown
+sleep 1
+xdotool getactivewindow windowmove %@ 0 0
