@@ -1,0 +1,98 @@
+#ALIAS FILE:
+#20230104 0830 est EJR
+#    ___    ___
+#   /   |  / (_)___ _________  _____
+#  / /| | / / / __ `/ ___/ _ \/ ___/
+# / ___ |/ / / /_/ (__  )  __(__  )
+#/_/  |_/_/_/\__,_/____/\___/____/
+#
+#== VARIABLES =================================================================
+ # places
+  zals_ame="$HOME/a-me"
+   zals_bin="$zals_ame/bin"
+   zals_music="$zals_ame/Music"
+   zals_eos="$zals_ame/e-os"
+    zals_apps="$zals_eos/e-apps"
+    zals_notes="$zals_eos/e-notes"
+    zals_repo="$zals_eos/repo"
+
+ # actions
+  zals_term='x-terminal-emulator -e'
+  zals_disown='>>/dev/null 2>&1 & disown'
+ #typeaaa-example=  alias e-ABCD-eat="$zals_eata 'ABCD'; $zals_eatz"
+  zals_eata='history -s'
+  zals_eatz='sleep 1s; xdotool key Up 1>/dev/null; echo'
+#== BASIC =====================================================================
+  alias c='clear'
+  alias cls='clear && ls -a'
+  alias et='clear; tree -a'
+#== EA ========================================================================
+ #notes ---
+
+  #alias e-notes-x.ea="xdg-open $zals_notes/x.pdf"
+   alias e-html-here.ea="cp $zals_eos/sites/radio/*.* ./"
+
+  #alias e-notes-x.ea="zathura $zals_notes/x.pdf $zals_disown"
+   alias e-notes-awk.ea="xdg-open $zals_notes/awk.pdf"
+   alias e-notes-bash-basics.ea="xdg-open $zals_notes/bash-basics.pdf"
+   alias e-notes-bash-colors.ea="xdg-open $zals_notes/bash-colors.pdf"
+   alias e-notes-bash-scripting.ea="xdg-open $zals_notes/bash-scripting.pdf"
+   alias e-notes-bash-utils.ea="xdg-open $zals_notes/bash-utils.pdf"
+   alias e-notes-c.ea="xdg-open $zals_notes/c.pdf"
+   alias e-notes-compress.ea="xdg-open $zals_notes/compress.pdf"
+   alias e-notes-cprimer.ea="xdg-open $zals_notes/cprimer.pdf"
+   alias e-notes-figlet.ea="xdg-open $zals_notes/figlet.pdf"
+   alias e-notes-grep.ea="xdg-open $zals_notes/grep.pdf"
+   alias e-notes-html.ea="xdg-open $zals_notes/html.pdf"
+   alias e-notes-js.ea="xdg-open $zals_notes/js.pdf"
+   alias e-notes-php.ea="xdg-open $zals_notes/php.pdf"
+   alias e-notes-powershell.ea="xdg-open $zals_notes/powershell.pdf"
+   alias e-notes-python3.ea="xdg-open $zals_notes/python3.pdf"
+   alias e-notes-python.ea="xdg-open $zals_notes/python.pdf"
+   alias e-notes-pythonintro.ea="xdg-open $zals_notes/pythonintro.pdf"
+   alias e-notes-regex1.ea="xdg-open $zals_notes/regex1.pdf"
+   alias e-notes-regex.ea="xdg-open $zals_notes/regex.pdf"
+   alias e-notes-sed.ea="xdg-open $zals_notes/sed.pdf"
+   alias e-notes-xhtml.ea="xdg-open $zals_notes/xhtml.pdf"
+   alias e-notes-yad.ea="xdg-open $zals_notes/yad.pdf"
+   alias e-notes-zenity.ea="xdg-open $zals_notes/zenity.pdf"
+
+#== EAI ========================================================================
+  alias e-figit-eai="read -p 'FIGLET:' figitaaa; figlet -f slant \$figitaaa | sed -n 's/^.*/#&/p'"
+#== EAT =======================================================================
+ #avi~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #avi-a (audio)
+   alias e-avi-a-ytmp3.eat="$zals_eata 'youtube-dl -x --audio-format mp3 '; $zals_eatz"
+   alias e-avi-a-convertopuslq.eat="$zals_eata 'ffmpeg -i IN -c:a libopus -b:a 16k OUT'; $zals_eatz"
+  #avi-av (audio/video)
+   alias e-avi-av-convert.eat="$zals_eata 'ffmpeg -i IN OUT'; $zals_eatz"
+  #avi-v (video)
+   alias e-avi-v-removeaudio.eat="$zals_eata 'ffmpeg -f lavfi -i aevalsrc=0 -i IN -c:v copy -c:a aac -map 0 -map 1:v -shortest OUT'; $zals_eatz"
+  #avi-i (images)
+   alias e-avi-i-resize.eat="$zals_eata 'for i in *.png; do convert \$i -resize 1000x1500 ../\${i%.*}.png; done'; $zals_eatz"
+   alias e-avi-i-convert.eat="$zals_eata 'for i in *.jpg; do convert \$i ../dir/\${i%.*}.png; done'; $zals_eatz"
+   alias e-avi-i-strip.eat="$zals_eata 'mogrify -strip z.zzz'; $zals_eatz"
+ #app~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  alias e-app-apt-install.eat="$zals_eata 'sudo apt install -y'; $zals_eatz"
+  alias e-app-deb-install.eat="$zals_eata 'sudo gdebi z.deb --n'; $zals_eatz"
+  alias e-app-info-search.eat="$zals_eata 'apt-cache --no-all-versions show zzz'; $zals_eatz"
+  alias e-app-list-mine.eat="$zals_eata 'dpkg -l'; $zals_eatz"
+  alias e-app-status.eat="$zals_eata 'dpkg -s zzz'; $zals_eatz"
+ #idk~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  alias e-app-uninstall-apt.eat="$zals_eata 'sudo apt purge --auto-remove -y'; $zals_eatz"
+  alias e-cat-tabwidth.eat="$zals_eata 'cat zzz.txt | expand -t2'; $zals_eatz"
+  alias e-compare-comm.eat="$zals_eata 'comm -23 <(sort -n new.txt) <(sort -n old.txt) >added.txt'; $zals_eatz"
+  alias e-dconf2txt.eat="$zals_eata 'dconf dump /org/cinnamon/desktop/keybindings/ > dconf-settings.conf'; $zals_eatz"
+  alias e-rsync.eat="$zals_eata 'sudo rsync -avh --delete --exclude=lost+found/ in/ out/'; $zals_eatz"
+  alias e-zzest.eat="$zals_eata 'xxx'; $zals_eatz"
+#== EF ========================================================================
+ #~~tts~~
+  e-tts.ef() { zals_tts="$@"; spd-say "$zals_tts"; }
+
+#______________________________________________________________________________
+#== NOTES =====================================================================
+# alias e-ABCD-new.ea='x-terminal-emulator -e ABCD >>/dev/null 2>&1 & disown'
+#USING ALIAS/FUNC IN KEYBINDS
+  # bash -ic 'commands'
+  # x-terminal-emulator -e COMMANDS
+#==============================================================================
