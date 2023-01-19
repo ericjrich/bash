@@ -1,5 +1,5 @@
 #ALIAS FILE:
-#20230104 0830 est EJR
+#20230119 0805 est EJR
 #    ___    ___
 #   /   |  / (_)___ _________  _____
 #  / /| | / / / __ `/ ___/ _ \/ ___/
@@ -27,10 +27,11 @@
   alias cls='clear && ls -a'
   alias et='clear; tree -a'
 #== EA ========================================================================
+	alias e-adb-kill.ea='killall adb; rm -R ~/.android/'
  #notes ---
 
   #alias e-notes-x.ea="xdg-open $zals_notes/x.pdf"
-   alias e-html-here.ea="cp $zals_eos/sites/radio/*.* ./"
+   alias e-html-here.ea="cp -r $zals_repo/html/* ./"
 
   #alias e-notes-x.ea="zathura $zals_notes/x.pdf $zals_disown"
    alias e-notes-awk.ea="xdg-open $zals_notes/awk.pdf"
@@ -44,6 +45,7 @@
    alias e-notes-figlet.ea="xdg-open $zals_notes/figlet.pdf"
    alias e-notes-grep.ea="xdg-open $zals_notes/grep.pdf"
    alias e-notes-html.ea="xdg-open $zals_notes/html.pdf"
+   alias e-notes-html-flex.ea="xdg-open $zals_notes/html-flex.pdf"
    alias e-notes-js.ea="xdg-open $zals_notes/js.pdf"
    alias e-notes-php.ea="xdg-open $zals_notes/php.pdf"
    alias e-notes-powershell.ea="xdg-open $zals_notes/powershell.pdf"
