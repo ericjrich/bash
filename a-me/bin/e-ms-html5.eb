@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+#HAVE XED OPEN ON LEFT MONITOR FULL
+#HAVE CHROME WITH HTML OPEN IN TAB 0 ON SCREEN 2 FULL
+
+#XED:			SAVE ALL
+	sleep 1
+	xdotool key Shift+Ctrl+L
+#	xdotool keydown Shift
+#	xdotool key Ctrl+L
+#	xdotool keyup Shift
+	sleep 1
+
+#CHROME: 	REFRESH TAB_0
+	xdotool mousemove 1468 15
+	xdotool click 1
+	xdotool key Ctrl+R
+	sleep .1
+
+#XED: 		Back To XED
+	xdotool mousemove 700 10
+	xdotool click 1

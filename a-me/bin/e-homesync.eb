@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#20230103 1020 est EJR
+#20230121 1520 est EJR
 shopt -s dotglob
 #= JumpTo Function =========================================================
 function jumpto { label=$1; cmd=$(sed -n "/$label:/{:a;n;p;ba};" $0 | grep -v ':$'); eval "$cmd"; exit; }
@@ -8,19 +8,24 @@ start=${1:-"start"} ; jumpto $start
 start:
 #===========================================================================
 mainmenu:
-choice=$(zenity --width=360 --height=420 --list --title 'EJR MINT 21.1 Setup' --text 'Choose?' --column Options "01-homebackup" "02-homerestore" "QUIT")
-if [ "$choice" = "01-homebackup" ]; then jumpto 01-homebackup
-elif [ "$choice" = "02-homerestore" ]; then jumpto 02-homerestore
-elif [ "$choice" = "QUIT" ]; then exit
+clear
+echo '== EJR Home Sync =='
+echo '1 - Backup Home Folder'
+echo '2 - Resote A Home Folder'
+echo 'x - Exit'
+read choice
+  if [ "$choice" = '1' ]; then jumpto backup
+elif [ "$choice" = '2' ]; then jumpto restore
+elif [ "$choice" = 'x' ]; then exit 0
 else exit 0; fi
 #===========================================================================
-#===========================================================================
-01-homebackup:
+backup:
  cd /
 zhome=$(zenity --width=600 --height=420 --file-selection --directory --title='Select Home Folder To TAR' --filename="/"); if [ $? == 1 ]; then jumpto mainmenu; fi
 zdst=$(zenity --width=600 --height=420 --file-selection --directory --title='Select DIR To Save TAR' --filename="/"); if [ $? == 1 ]; then jumpto mainmenu; fi
 zname=$(zenity --entry --title='Name Your Home Tar' --text='Name:' --entry-text "mint"); if [ $? == 1 ]; then jumpto mainmenu; fi
-ztime=$(date '+%Y%m%d-%H%M'); ztar="$zdst/$ztime-$zname.tar"
+ztime=$(date '+%Y%m%d-%H%M')
+ztar="$zdst/$ztime-$zname.tar"
 zxd='
 --exclude='.cache'
 --exclude='.config/cinnamon-monitors.xml'
@@ -33,21 +38,31 @@ zxd='
 echo -e "\033[33mGoing to tar your home folder \033[36m $zhome \033[33m to a tar at \033[36m $ztar\033[0m"
 echo -e "\033[33mexlcudes \n \033[36m$zxd\033[0m"
 read -p 'HIT ENTER' idgaf
-zenity --question --text='Are You Sure You Want To Continue'; if [ $? == 1 ]; then jumpto mainmenu; fi
+clear
+zenity --question --text='Continue ??'; if [ $? == 1 ]; then jumpto mainmenu; fi
+echo 'please wait...'
  cd $zhome/; tar $zxd -cpf $ztar ./
+echo '....Going To Creating A Password Protect Version In Documents........'
+read -p 'Ctrl-C To Leave Now' idgaf
+zzip="$HOME/Documents/$ztime-$zname.zip"
+ zip $zzip $ztar -e
+echo 'done'
 jumpto mainmenu
 #===========================================================================
-02-homerestore:
+restore:
  cd /
 ztmp=/tmp/zhome
 ztar=$(zenity --file-selection --title='Select Your Tar File' --filename="/"); if [ $? == 1 ]; then jumpto mainmenu; fi
 zhome=$(zenity --width=600 --height=420 --file-selection --directory --title='Select Home Folder To Overwrite' --filename="/"); if [ $? == 1 ]; then jumpto mainmenu; fi
 echo -e "\033[33mGoing to extract your tar \033[36m$ztar\033[33m to home-dir \033[36m $zhome\033[0m"
 read -p 'HIT ENTER' idgaf
-zenity --question --text='Are You Sure You Want To Continue'; if [ $? == 1 ]; then jumpto mainmenu; fi
+clear
+zenity --question --text='Continue ??'; if [ $? == 1 ]; then jumpto mainmenu; fi
+echo 'please wait...'
  mkdir $ztmp/; tar -xpf $ztar -C $ztmp/; rsync -avh --delete --exclude=lost+found/ $ztmp/ $zhome/; rm -r $ztmp/
 # AUDIO FIX
  sudo rm /var/lib/alsa/asound.state; sudo alsactl init; sudo alsactl store; sudo alsa force-reload; pulseaudio -k
  sudo sh -c "echo 0 > /sys/module/snd_hda_intel/parameters/power_save"; sudo sh -c "echo N > /sys/module/snd_hda_intel/parameters/power_save_controller"
+echo 'done'
 jumpto mainmenu
 #===========================================================================
