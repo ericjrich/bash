@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-#2022-12-30-0824 est EJR
-#===========================================================================
-clear
-x-terminal-emulator --geometry 70x50-0+0 -e "bash -c 'echo RECEIVER; minimodem --rx 50 -q -c 3'"
-clear
-x-terminal-emulator --geometry 70x50+0+0 -e "bash -c 'echo TRANSMITTER; minimodem --tx 50'"
-#===========================================================================

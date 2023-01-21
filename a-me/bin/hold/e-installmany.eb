@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-#20221208 1140 EJR
-shopt -s dotglob; clear
-echo 'INPUT THE PACKAGES WITH SPACES BETWEEN THAT YOU WANT INSTALLED VIA APT'
-read elist
-sudo apt update
-clear
-for i in ${elist}; do sudo apt-get install -y $i; done
-echo '--------DONE----------'
