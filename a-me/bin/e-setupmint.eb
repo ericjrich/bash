@@ -83,7 +83,7 @@ read -p 'DONE HIT ENTER' idgaf
 jumpto mainmenu
 #===========================================================================
 backup:
- cd /
+cd /
 zhome=$(zenity --width=600 --height=420 --file-selection --directory --title='Select Home Folder To TAR' --filename="/"); if [ $? == 1 ]; then jumpto mainmenu; fi
 zdst=$(zenity --width=600 --height=420 --file-selection --directory --title='Select DIR To Save TAR' --filename="/"); if [ $? == 1 ]; then jumpto mainmenu; fi
 zname=$(zenity --entry --title='Name Your Home Tar' --text='Name:' --entry-text "mint"); if [ $? == 1 ]; then jumpto mainmenu; fi
@@ -96,13 +96,19 @@ echo -e "\033[33mexlcudes \n \033[36m$zxd\033[0m"
 read -p 'HIT ENTER' idgaf
 clear
 zenity --question --text='Continue ??'; if [ $? == 1 ]; then jumpto mainmenu; fi
-echo 'please wait...'
- cd $zhome/; tar $zxd -cpf $ztar ./
-echo '....Going To Creating A Password Protect Version In Documents........'
-read -p 'Ctrl-C To Leave Now' idgaf
 #----------------
- zip $zzip $ztar -e
-echo 'done'
+echo 'please wait...'
+cd $zhome/; tar $zxd -cpf $ztar ./
+#----------------
+clear
+echo '....Do You Want To Creating A Password Protect Version In Documents........'
+echo ''
+echo 'y     - YES'
+echo '      - NO'
+read -p 'Enter For NO' idgaf
+  if [ "$idgaf" = 'y' ]; then clear; echo '....Going To Creating A Password Protect Version In Documents........'; zip $zzip $ztar -e; fi
+clear
+echo 'Done'
 jumpto mainmenu
 #===========================================================================
 restore:
